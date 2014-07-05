@@ -83,7 +83,7 @@ module.exports = class engine
       file = if isAbsolute name then name else join dirname(path), name
       that.read file, options, (err, str)->
         return fn(err) if err
-        options.partials[name] = str
+        options.partials[key] = str
         next ++index
       null
 
