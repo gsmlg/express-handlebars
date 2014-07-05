@@ -14,7 +14,10 @@ module.exports = class engine
     layout_dir: null
     helpers: {}
   @get = (name)->
-    _settings[name]
+    if name?
+      _settings[name]
+    else
+      _.clone _settings
   @set = (name, value)->
     sets = {}
     if typeof name is 'string' and value?
@@ -30,7 +33,7 @@ module.exports = class engine
     options.layout = self.get('layout') if options.layout != false and self.get('useLayout')
     options.partials ?= []
     glob join(self.get('partials_dir'),'**', '*' + extname(path)), (err, files)->
-      options.partials.concat(files)
+      options.partials.concat files if files
       that.read_partials_and_layout path, options, (err)->
         return fn err if err
         that.read path, options, (err, str)->
@@ -55,15 +58,21 @@ module.exports = class engine
     partials = options.partials
     file_ext = extname path or self.get('extname')
     options.partials = {}
-    names = if Array.isArray() then partials else Object.keys partials
+    names = {}
+    if _.isArray partials
+      names[n] = n for n in partials
+    else
+      names[k] = v for k, v of partials
+    keys = Object.keys names
     if options.layout?
       layout = if extname options.layout is file_ext then options.layout else options.layout + file_ext
       layout = join self.get('layout_dir'), layout if not isAbsolute layout
 
     next = (index)->
       return fn(null) if index is names.length
-      name = names[index]
-      file = join dirname(path), name + extname(path) if not isAbsolute name
+      key = keys[index]
+      name = if extname names[key] is file_ext then names[key] else names[key] + file_ext
+      file = join dirname(path), name if not isAbsolute name
       that.read file, options, (err, str)->
         return fn(err) if err
         options.partials[name] = str
