@@ -1,0 +1,37 @@
+{
+  "name": "express4-handlebars",
+  "version": "0.1.0",
+  "description": "handelbars 2 support in express4 ",
+  "main": "index.js",
+  "scripts": {
+    "test": "node node_modules/gulp/bin/gulp test",
+    "compile": "node node_modules/gulp/bin/gulp compile"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@github.com/gsmlg/express-handlebars"
+  },
+  "keywords": [
+    "handlebars",
+    "express",
+    "hbs"
+  ],
+  "author": "gsmlg",
+  "license": "GPLv3",
+  "bugs": {
+    "url": "https://github.com/gsmlg/express-handlebars/issues"
+  },
+  "homepage": "https://github.com/gsmlg/express-handlebars",
+  "dependencies": {
+    "express": "^4.5.0",
+    "glob": "^4.0.3",
+    "async": "^0.9.0",
+    "handlebars": "^2.0.0-alpha.4",
+    "underscore": "^1.6.0"
+  },
+  "devDependencies": {
+    "coffee-script": "^1.7.1",
+    "gulp": "^3.8.5",
+    "mocha": "^1.20.1"
+  }
+}

@@ -1,0 +1,4 @@
+tasks/*
+src/*
+test/*
+gulp.coffee
