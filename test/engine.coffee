@@ -12,29 +12,66 @@ describe 'engine', ->
   describe 'render', ->
     file = join(views, 'hello.hbs')
     opt = {partials: {}, helpers: {}, layout: false}
-    view = new engine file, {}
-    render = view.render
     it 'should render hello world', ->
       src = 'Hello {{name}}!'
       local = _.extend(opt, {name: 'World'})
-      render src, local, (err, data)->
+      engine::render src, local, (err, data)->
         data.should.equal 'Hello World!'
 
 
   describe 'layout', ->
     opt = {}
-    view = null
+    this.timeout 10000
     beforeEach (done)->
       engine.set 'useLayout', true
+      opt = {}
       done()
 
-    it 'should render in layout', ->
+    it 'should render in layout', (done)->
       file = join views, 'hello.hbs'
       opt.name = 'George'
-      new engine file, opt, (err, str)->
-        console.error err.stack if err
+      fn = (err, str)->
         throw err if err
         str.should.be.type 'string'
+        str = str.trim()
         str.should.startWith '<html>'
         str.should.endWith '</html>'
         str.should.match /George/
+        done()
+      new engine(file, opt, fn)
+
+    it 'should not render layout', (done)->
+      engine.set 'useLayout', false
+      file = join views, 'hello.hbs'
+      opt.name = 'George'
+      opt.layout = false
+      new engine file, opt, (err, str)->
+        throw err if err
+        str.should.be.type 'string'
+        str = str.trim()
+        str.should.not.startWith '<html>'
+        str.should.not.endWith '</html>'
+        str.should.match /George/
+        done()
+
+
+  describe 'partials', ->
+    opt = {}
+    this.timeout 10000
+    view = null
+    beforeEach (done)->
+      engine.set 'useLayout', false
+      done()
+
+    it 'should partials', (done)->
+      file = join views, 'hello.hbs'
+      opt.name = 'George'
+      opt.partials = ['hello']
+      new engine file, opt, (err, str)->
+        throw err if err
+        str.should.be.type 'string'
+        str = str.trim()
+        str.should.not.startWith '<html>'
+        str.should.not.endWith '</html>'
+        str.should.match /George/
+        done()

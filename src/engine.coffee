@@ -30,10 +30,12 @@ module.exports = class engine
   constructor: (path, options, fn)->
     that = @
     options.fileName = path
-    options.layout = self.get('layout') if options.layout != false and self.get('useLayout')
+    if options.layout isnt false and self.get('useLayout') is true
+        options.layout = self.get('layout')
     options.partials ?= {}
     options.helpers ?= {}
     glob join(self.get('partials_dir'),'**', '*' + extname(path)), (err, files)->
+      throw err if err
       if _.isArray options.partials
         partials = {}
         partials[n] = n for n in options.partials
@@ -64,28 +66,28 @@ module.exports = class engine
     fn null, template(options)
 
   read_partials_and_layout: (path, options, fn)->
-    return fn(null) if not options.partials? and not options.layout?
     that = @
     partials = options.partials
     file_ext = extname path or self.get('extname')
     options.partials = {}
     names = _.clone partials
     keys = Object.keys names
-    if options.layout?
+    if typeof options.layout is 'string'
       layout = if extname options.layout is file_ext then options.layout else options.layout + file_ext
       layout = join self.get('layout_dir'), layout if not isAbsolute layout
 
     next = (index)->
       return fn null if index is keys.length
       key = keys[index]
-      name = if extname names[key] is file_ext then names[key] else names[key] + file_ext
-      file = join dirname(path), name if not isAbsolute name
+      name = if extname(names[key]) is file_ext then names[key] else names[key] + file_ext
+      file = if isAbsolute name then name else join dirname(path), name
       that.read file, options, (err, str)->
         return fn(err) if err
         options.partials[name] = str
-        next index++
+        next ++index
+      null
 
-    if layout?
+    if layout
       @read layout, options, (err, str)->
         return fn(err) if err
         options.layout = str
