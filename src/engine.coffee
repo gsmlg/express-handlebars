@@ -32,6 +32,7 @@ module.exports = class engine
     options.fileName = path
     options.layout = self.get('layout') if options.layout != false and self.get('useLayout')
     options.partials ?= {}
+    options.helpers ?= {}
     glob join(self.get('partials_dir'),'**', '*' + extname(path)), (err, files)->
       if _.isArray options.partials
         partials = {}
@@ -52,12 +53,12 @@ module.exports = class engine
 
   render: (str, options, fn)->
     partials = options.partials
-    helpers = options.helpers
-    handlebars.registerPartial name, partial for name, partial of partails
+    helpers = _.defaults options.helpers, self.get('helpers')
+    handlebars.registerPartial name, partial for name, partial of partials
     handlebars.regitserHelper name, helper for name, helper of helpers
-    if options.layout?
+    if typeof options.layout is 'string'
       handlebars.registerPartial 'yield', str
-      template = handlebars.compile layout
+      template = handlebars.compile options.layout
     else
       template = handlebars.compile str
     fn null, template(options)
@@ -75,7 +76,7 @@ module.exports = class engine
       layout = join self.get('layout_dir'), layout if not isAbsolute layout
 
     next = (index)->
-      return fn(null) if index is names.length
+      return fn null if index is keys.length
       key = keys[index]
       name = if extname names[key] is file_ext then names[key] else names[key] + file_ext
       file = join dirname(path), name if not isAbsolute name
