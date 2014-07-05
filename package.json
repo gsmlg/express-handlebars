@@ -1,6 +1,6 @@
 {
   "name": "express4-handlebars",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "handelbars 2 support in express4 ",
   "main": "index.js",
   "scripts": {
