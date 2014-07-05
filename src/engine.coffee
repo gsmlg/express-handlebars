@@ -1,5 +1,5 @@
 fs = require 'fs'
-{join, extname, dirname, resolve} = require 'path'
+{join, extname, dirname, resolve, basename} = require 'path'
 handlebars = require 'handlebars'
 _ = require 'underscore'
 glob = require 'glob'
@@ -31,9 +31,19 @@ module.exports = class engine
     that = @
     options.fileName = path
     options.layout = self.get('layout') if options.layout != false and self.get('useLayout')
-    options.partials ?= []
+    options.partials ?= {}
     glob join(self.get('partials_dir'),'**', '*' + extname(path)), (err, files)->
-      options.partials.concat files if files
+      if _.isArray options.partials
+        partials = {}
+        partials[n] = n for n in options.partials
+        options.partials = partials
+      if files?
+        partials = {}
+        for file in files
+          name = basename file
+          name = name.substr 0, name.length - extname(path).length
+          partials[name] = file
+        _.defaults options.partials, partials
       that.read_partials_and_layout path, options, (err)->
         return fn err if err
         that.read path, options, (err, str)->
@@ -58,11 +68,7 @@ module.exports = class engine
     partials = options.partials
     file_ext = extname path or self.get('extname')
     options.partials = {}
-    names = {}
-    if _.isArray partials
-      names[n] = n for n in partials
-    else
-      names[k] = v for k, v of partials
+    names = _.clone partials
     keys = Object.keys names
     if options.layout?
       layout = if extname options.layout is file_ext then options.layout else options.layout + file_ext
