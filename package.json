@@ -1,6 +1,6 @@
 {
   "name": "express4-handlebars",
-  "version": "0.1.8",
+  "version": "0.2.0",
   "description": "handelbars 2 support in express4 ",
   "main": "index.js",
   "scripts": {
@@ -14,6 +14,9 @@
   "keywords": [
     "handlebars",
     "express",
+    "express4-handlebars2",
+    "express4",
+    "handlebars2",
     "hbs"
   ],
   "author": "gsmlg",
@@ -26,7 +29,7 @@
     "express": "^4.5.0",
     "glob": "^4.0.3",
     "async": "^0.9.0",
-    "handlebars": "^2.0.0-alpha.4",
+    "handlebars": "^2.0.0",
     "underscore": "^1.6.0"
   },
   "devDependencies": {

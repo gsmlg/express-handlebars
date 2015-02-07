@@ -34,7 +34,7 @@ module.exports = class engine
         options.layout = self.get('layout')
     options.partials ?= {}
     options.helpers ?= {}
-    glob join(self.get('partials_dir'),'**', '*' + extname(path)), (err, files)->
+    glob(join(self.get('partials_dir'),'**', '*' + extname(path)), (err, files)->
       throw err if err
       if _.isArray options.partials
         partials = {}
@@ -52,9 +52,10 @@ module.exports = class engine
         that.read path, options, (err, str)->
           return fn(err) if err
           that.render str, options, fn
+    ) if self.get('partials_dir')
 
   render: (str, options, fn)->
-    partials = options.partials
+    partials = options.partials || {}
     helpers = _.defaults options.helpers, self.get('helpers')
     handlebars.registerPartial name, partial for name, partial of partials
     handlebars.regitserHelper name, helper for name, helper of helpers
